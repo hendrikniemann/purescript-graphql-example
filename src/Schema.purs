@@ -2,12 +2,12 @@ module Schema (schema) where
 
 import Prelude
 
-import GraphQL.Type as GraphQL
 import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff, Milliseconds(..), delay)
+import GraphQL.Type as GraphQL
 
 schema :: GraphQL.Schema Unit Unit
-schema = GraphQL.schema queryType Nothing
+schema = GraphQL.schema queryType mutationType
 
 queryType :: GraphQL.ObjectType Unit (Maybe Unit)
 queryType =
@@ -33,6 +33,12 @@ queryType =
           Nothing
           { id: GraphQL.argument (GraphQL.nonNull GraphQL.id) Nothing }
           resolveUser
+    , userFromDraft:
+        GraphQL.field
+          (GraphQL.nonNull userType)
+          Nothing
+          { draft: GraphQL.argument (GraphQL.nonNull userDraftType) Nothing }
+          resolveUserFromDraft
     }
       where
         resolveSquare :: Unit -> { value :: Maybe Int } -> Unit -> Aff Int
@@ -40,9 +46,18 @@ queryType =
             Just x -> x * x
             Nothing -> 0
         resolveUser :: Unit -> { id :: String } -> Unit -> Aff User
-        resolveUser _ { id } _= pure { id, email: "me@example.com", name: "John Doe" }
+        resolveUser _ { id } _=
+          pure { id, email: "me@example.com", name: "John Doe", gender: pure Male }
+        resolveUserFromDraft :: Unit -> { draft :: UserDraft } -> Unit -> Aff User
+        resolveUserFromDraft _ { draft: { gender, name, email } } _ =
+          pure { id: "1", gender, name, email }
 
-type User = { id :: String, email :: String, name :: String }
+type User =
+    { id :: String
+    , email :: String
+    , name :: String
+    , gender :: Maybe Gender
+    }
 
 userType :: GraphQL.ObjectType Unit (Maybe User)
 userType =
@@ -64,9 +79,17 @@ userType =
           (GraphQL.nonNull GraphQL.string)
           (Just "The name of the user.")
           \{ name } _ -> pure name
+    , gender:
+        GraphQL.field'
+          genderType
+          (Just (
+            "The gender of the user or `null` if the user chose not to " <>
+            "share their gender with the service."
+          ))
+          \{ gender } _ -> pure gender
     }
 
-type UserDraft = { email :: String, name :: String }
+type UserDraft = { email :: String, name :: String, gender :: Maybe Gender }
 
 userDraftType :: GraphQL.InputObjectType (Maybe UserDraft)
 userDraftType =
@@ -81,4 +104,32 @@ userDraftType =
         GraphQL.inputField
           (GraphQL.nonNull GraphQL.string)
           (Just "The name for the draft user.")
+    , gender:
+        GraphQL.inputField
+          genderType
+          (Just "The gender of the user of null if they prefer not to say.")
     }
+
+data Gender
+  = Male
+  | Female
+  | NonBinary
+
+genderType :: GraphQL.EnumType (Maybe Gender)
+genderType =
+  GraphQL.enumType
+    "Gender"
+    (Just "The gender of a user as reported by the user.")
+    [ GraphQL.enumValue
+        "MALE"
+        (Just "Identifies as male.")
+        Male
+    , GraphQL.enumValue
+        "FEMALE"
+        (Just "Identifies as female.")
+        Female
+    , GraphQL.enumValue
+        "NON_BINARY"
+        (Just "Identifies neither as male nor as female.")
+        NonBinary
+    ]
