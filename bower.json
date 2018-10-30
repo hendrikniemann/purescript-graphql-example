@@ -12,9 +12,12 @@
     "purescript-effect": "^2.0.0",
     "purescript-httpure": "^0.7.1",
     "purescript-argonaut": "^4.0.1",
-    "purescript-foreign-object": "^1.0.0"
+    "purescript-foreign-object": "^1.0.0",
+    "purescript-refs": "^4.1.0",
+    "purescript-uuid": "^5.0.0"
   },
   "devDependencies": {
-    "purescript-psci-support": "^4.0.0"
+    "purescript-psci-support": "^4.0.0",
+    "purescript-spec": "^3.0.0"
   }
 }

@@ -1,0 +1,32 @@
+{
+  "name": "purescript-graphql-example",
+  "version": "1.0.0",
+  "description": "Example purescript graphql app",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "graphql": "^14.0.2",
+    "uuid": "^3.3.2",
+    "uuid-validate": "0.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "pulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hendrikniemann/purescript-graphql-example.git"
+  },
+  "keywords": [
+    "graphql",
+    "purescript"
+  ],
+  "author": "hendrikniemann",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hendrikniemann/purescript-graphql-example/issues"
+  },
+  "homepage": "https://github.com/hendrikniemann/purescript-graphql-example#readme"
+}
