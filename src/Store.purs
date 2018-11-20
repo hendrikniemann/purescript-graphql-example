@@ -2,7 +2,7 @@ module Store where
 
 import Prelude
 
-import Data.Array ((:))
+import Data.Array (filter, (:))
 import Data.Foldable (class Foldable, find)
 import Data.Maybe (Maybe(..))
 import Data.UUID (genUUID)
@@ -37,3 +37,17 @@ insertPost { title, content } store = liftEffect do
   let post = { id, title, content }
   _ <- Ref.modify (post:_) store.posts
   pure $ Just post
+
+removePost :: String -> Store -> Aff Unit
+removePost id store =
+  liftEffect $ Ref.modify_ (filter \post -> post.id /= id) store.posts
+
+updatePost :: String -> PostDraft -> Store -> Aff (Maybe Post)
+updatePost id draft store = do
+  liftEffect $ Ref.modify_ update store.posts
+  readPost id store
+    where
+      update posts = posts <#> \post ->
+        if post.id == id
+        then post { title = draft.title, content = draft.content }
+        else post

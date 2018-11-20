@@ -2,9 +2,10 @@ module Test.Main where
 
 import Prelude
 
-import Data.Maybe (Maybe(..))
+import Data.Array (length)
+import Data.Maybe (Maybe(..), maybe)
 import Effect (Effect)
-import Store (createStore, insertPost, readPost, readPosts)
+import Store (createStore, insertPost, readPost, readPosts, removePost, updatePost)
 import Test.Spec (describe, it)
 import Test.Spec.Assertions (fail, shouldEqual)
 import Test.Spec.Reporter (consoleReporter)
@@ -48,3 +49,31 @@ main = run [consoleReporter] $
         store <- createStore
         receivedPost <- readPost "asdf" store
         receivedPost `shouldEqual` Nothing
+
+    describe "removePost" do
+      it "should remove a post from the store" do
+        store <- createStore
+        insertResult <- insertPost { title: "Hello", content: "world" } store
+        case insertResult of
+          Nothing -> fail "Something went wrong inserting a value."
+          Just { id } -> do
+            removePost id store
+            shouldEqual [] =<< readPosts store
+
+      it "should keep all values if the passed id does not exist" do
+        store <- createStore
+        _ <- insertPost { title: "Hello", content: "world" } store
+        removePost "asdf" store
+        posts <- readPosts store
+        length posts `shouldEqual` 1
+
+    describe "updatePost" do
+      it "should update a post in the database" do
+        store <- createStore
+        insertResult <- insertPost { title: "Hello", content: "world" } store
+        case insertResult of
+          Nothing -> fail "Something went wrong inserting a value."
+          Just { id } -> do
+            _ <- updatePost id { title: "Hallo", content: "Welt" } store
+            post <- readPost id store
+            post `shouldEqual` Just { id, title: "Hallo", content: "Welt" }
