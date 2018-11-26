@@ -11,11 +11,12 @@
     "purescript-console": "^4.1.0",
     "purescript-effect": "^2.0.0",
     "purescript-httpure": "^0.7.1",
-    "purescript-argonaut": "^4.0.1",
+    "purescript-argonaut-codecs": "^5.1.0",
     "purescript-foreign-object": "^1.0.0",
     "purescript-refs": "^4.1.0",
     "purescript-uuid": "^5.0.0",
-    "purescript-graphql": "1.0.0-rc1"
+    "purescript-graphql": "1.0.0-rc1",
+    "purescript-argonaut-core": "^4.0.1"
   },
   "devDependencies": {
     "purescript-psci-support": "^4.0.0",
