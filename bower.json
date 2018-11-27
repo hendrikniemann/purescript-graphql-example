@@ -15,7 +15,7 @@
     "purescript-foreign-object": "^1.0.0",
     "purescript-refs": "^4.1.0",
     "purescript-uuid": "^5.0.0",
-    "purescript-graphql": "1.0.0-rc1",
+    "purescript-graphql": "1.0.0-rc2",
     "purescript-argonaut-core": "^4.0.1"
   },
   "devDependencies": {
