@@ -3,10 +3,11 @@ module Schema.Mutation where
 import Prelude
 
 import Context (Context)
+import Data.Array (foldl, mapMaybe)
 import Data.Maybe (Maybe(..))
 import GraphQL.Type as GraphQL
-import Schema.Post (postActionType, postDraftType, postType)
-import Store (insertPost, readPost, removePost)
+import Schema.Post (postActionType, postDraftType, postType, toPostAction, updateWithPostAction)
+import Store (insertPost, readPost, removePost, updatePost)
 
 mutationType :: GraphQL.ObjectType Context (Maybe Unit)
 mutationType =
@@ -53,6 +54,11 @@ mutationType =
                   $ postActionType)
                 (Just "List of actions that should be run on this post.")
           }
-          -- TODO: Implement the actual update!
-          \_ { id, actions } ctx -> readPost id ctx.store
+          \_ { id, actions } ctx -> do
+            let postActions = mapMaybe toPostAction actions
+            post <- readPost id ctx.store
+            case post of
+              Nothing -> pure Nothing
+              Just p ->
+                updatePost (foldl updateWithPostAction p postActions) ctx.store
     }

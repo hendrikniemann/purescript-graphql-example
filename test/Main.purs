@@ -74,6 +74,6 @@ main = run [consoleReporter] $
         case insertResult of
           Nothing -> fail "Something went wrong inserting a value."
           Just { id } -> do
-            _ <- updatePost id { title: "Hallo", content: "Welt" } store
+            _ <- updatePost { id, title: "Hallo", content: "Welt" } store
             post <- readPost id store
             post `shouldEqual` Just { id, title: "Hallo", content: "Welt" }

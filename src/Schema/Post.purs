@@ -1,4 +1,4 @@
-module Schema.Post (postType, postDraftType, postActionType) where
+module Schema.Post where
 
 import Prelude
 
@@ -44,16 +44,23 @@ postType =
           (\parent _ -> pure parent.content)
     }
 
-data PostAction = SetTitle String | SetContent String
+data PostAction
+  = SetTitle { title :: String }
+  | SetContent { content :: String }
 
 type PostActionObject =
   { setTitle :: Maybe { title :: String }
   , setContent :: Maybe { content :: String }
   }
 
-updateWithPostAction :: PostAction -> Post -> Post
-updateWithPostAction (SetTitle title) post = post { title = title }
-updateWithPostAction (SetContent content) post = post { content = content }
+updateWithPostAction :: Post -> PostAction -> Post
+updateWithPostAction post (SetTitle { title }) = post { title = title }
+updateWithPostAction post (SetContent { content }) = post { content = content }
+
+toPostAction :: PostActionObject -> Maybe PostAction
+toPostAction { setTitle: Just arg, setContent: Nothing } = Just (SetTitle arg)
+toPostAction { setTitle: Nothing, setContent: Just arg } = Just (SetContent arg)
+toPostAction _ = Nothing
 
 postActionType :: GraphQL.InputObjectType (Maybe PostActionObject)
 postActionType =

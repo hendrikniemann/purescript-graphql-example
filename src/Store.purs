@@ -42,12 +42,10 @@ removePost :: String -> Store -> Aff Unit
 removePost id store =
   liftEffect $ Ref.modify_ (filter \post -> post.id /= id) store.posts
 
-updatePost :: String -> PostDraft -> Store -> Aff (Maybe Post)
-updatePost id draft store = do
+updatePost :: Post -> Store -> Aff (Maybe Post)
+updatePost newPost store = do
   liftEffect $ Ref.modify_ update store.posts
-  readPost id store
+  readPost newPost.id store
     where
       update posts = posts <#> \post ->
-        if post.id == id
-        then post { title = draft.title, content = draft.content }
-        else post
+        if post.id == newPost.id then newPost else post
