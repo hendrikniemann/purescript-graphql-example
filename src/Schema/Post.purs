@@ -54,8 +54,8 @@ type PostActionObject =
   }
 
 updateWithPostAction :: Post -> PostAction -> Post
-updateWithPostAction post (SetTitle { title }) = post { title = title }
-updateWithPostAction post (SetContent { content }) = post { content = content }
+updateWithPostAction post (SetTitle { title }) = post { title = title }
+updateWithPostAction post (SetContent { content }) = post { content = content }
 
 toPostAction :: PostActionObject -> Maybe PostAction
 toPostAction { setTitle: Just arg, setContent: Nothing } = Just (SetTitle arg)

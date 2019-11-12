@@ -3,23 +3,24 @@ module Test.Main where
 import Prelude
 
 import Data.Array (length)
-import Data.Maybe (Maybe(..), maybe)
+import Data.Maybe (Maybe(..))
 import Effect (Effect)
+import Effect.Aff (launchAff_)
 import Store (createStore, insertPost, readPost, readPosts, removePost, updatePost)
 import Test.Spec (describe, it)
 import Test.Spec.Assertions (fail, shouldEqual)
 import Test.Spec.Reporter (consoleReporter)
-import Test.Spec.Runner (run)
+import Test.Spec.Runner (runSpec)
 
 main :: Effect Unit
-main = run [consoleReporter] $
+main = launchAff_ $ runSpec [consoleReporter] $
   describe "Store" do
     describe "createStore and readPosts" $
       it "initialise an read an empty store" do
         store <- createStore
         posts <- readPosts store
         posts `shouldEqual` []
-    
+
     describe "insertPost" $
       it "should insert a single post into the store" do
         store <- createStore
@@ -44,7 +45,7 @@ main = run [consoleReporter] $
           Just newPost -> do
             receivedPost <- readPost newPost.id store
             receivedPost `shouldEqual` Just newPost
-      
+
       it "should return Nothing if an id cannot be found in the store" do
         store <- createStore
         receivedPost <- readPost "asdf" store

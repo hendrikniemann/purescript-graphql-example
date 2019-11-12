@@ -15,9 +15,9 @@
     "nodemon": "^1.19.4"
   },
   "scripts": {
-    "test": "pulp test",
-    "build": "pulp build",
-    "start": "nodemon -w src -e purs -x \"pulp run\""
+    "test": "spago test",
+    "build": "spago build",
+    "start": "nodemon -w src -e purs -x \"spago run\""
   },
   "repository": {
     "type": "git",
